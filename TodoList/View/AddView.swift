@@ -9,8 +9,11 @@ import SwiftUI
 
 struct AddView: View {
     
-    @State var textFieldText: String = ""
     @EnvironmentObject var vm: ListViewModel
+    @Environment(\.dismiss) var dismiss
+
+    @State var textFieldText: String = ""
+    @State var showAlert: Bool = false
     
     var body: some View {
         
@@ -40,12 +43,28 @@ struct AddView: View {
             .padding()
         }
         .navigationTitle("메모 추가")
+        .alert("메모가 짧아요", isPresented: $showAlert) {
+            
+        } message: {
+            Text("메모를 조금 더 길게 써주세요")
+        }
+
     }
     
     func saveButtonPressed() {
-        vm.addItem(title: textFieldText)
+        if isAppropriate() {
+            vm.addItem(title: textFieldText)
+            dismiss()
+        }
     }
     
+    func isAppropriate() -> Bool {
+        if textFieldText.count < 2 {
+            showAlert.toggle()
+            return false
+        }
+        return true
+    }
 }
 
 #Preview {

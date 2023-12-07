@@ -12,14 +12,28 @@ struct ListView: View {
     @EnvironmentObject var vm: ListViewModel
     
     var body: some View {
-        List {
-            ForEach(vm.items) { item in
-                ListRowView(item: item)
+        
+        ZStack {
+            if vm.items.isEmpty {
+                NoItemsView()
+            } else {
+                List {
+                    ForEach(vm.items) { item in
+                        ListRowView(item: item)
+                            .onTapGesture {
+                                withAnimation(.spring()) {
+                                    vm.updateItem(item: item)
+                                }
+                            }
+                    }
+                    .onDelete(perform: vm.deleteItem)
+                    .onMove(perform: vm.moveItem)
+                    
+                }
+                .listStyle(.plain)
             }
-            .onDelete(perform: vm.deleteItem)
-            .onMove(perform: vm.moveItem)
         }
-        .listStyle(.plain)
+        
         .navigationTitle("메모!")
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
